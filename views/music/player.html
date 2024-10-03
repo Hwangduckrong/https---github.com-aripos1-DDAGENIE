@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Music Player</title>
+    <link rel="stylesheet" href="../../assets/css/player.css">
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <div class="popup-player">
+        <div class="player-left">
+            <!-- 왼쪽 플레이어 -->
+            <div id="audio-info">
+                <p>현재 재생 중: <span id="current-song">없음</span></p>
+            </div>
+            <audio id="audio-player" controls>
+                <source id="audio-source" src="../../assets/musicfile/Color_Out_-_Host.mp3" type="audio/mp3">
+                Your browser does not support the audio element.
+            </audio>
+            <!-- 음량 조절 슬라이더 -->
+            <div class="volume-control">
+                <label for="volume-slider">음량:</label>
+                <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1">
+            </div>
+        </div>
+
+        <div class="playlist-right">
+            <div class="user-info">
+                <span class="user-id">ihs*** 님</span>
+                <button class="logout-btn">로그아웃</button>
+            </div>
+
+            <!-- 탭 버튼들 -->
+            <div class="tab-header">
+                <button id="playlist-tab" class="active">재생목록 (7)</button>
+                <button id="my-music-tab">마이뮤직</button>
+            </div>
+
+            <!-- 재생목록 -->
+            <div id="playlist-content" class="tab-content active">
+                <ul class="playlist" id="playlist">
+                    <li><input type="checkbox"> Sunshine In Your Eyes - Free Music</li>
+                </ul>
+                <div class="playlist-footer">
+                    <button>담기</button>
+                    <button>삭제</button>
+                    <p id="song-count">0곡 / 1곡</p>
+                </div>
+            </div>
+
+            <!-- 마이뮤직 -->
+            <div id="my-music-content" class="tab-content">
+                <ul class="playlist" id="my-music">
+                    <li><input type="checkbox"> 나의 음악 1</li>
+                    <li><input type="checkbox"> 나의 음악 2</li>
+                    <li><input type="checkbox"> 나의 음악 3</li>
+                </ul>
+                <div class="playlist-footer">
+                    <button>담기</button>
+                    <button>삭제</button>
+                    <p>0곡 / 3곡</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const playlistTab = document.getElementById('playlist-tab');
+        const myMusicTab = document.getElementById('my-music-tab');
+        const playlistContent = document.getElementById('playlist-content');
+        const myMusicContent = document.getElementById('my-music-content');
+        const playlist = document.getElementById('playlist');
+        const currentSongDisplay = document.getElementById('current-song');
+        const audioPlayer = document.getElementById('audio-player');
+        const audioSource = document.getElementById('audio-source');
+        const volumeSlider = document.getElementById('volume-slider');
+
+
+        // 음량 슬라이더 값 변경 시 실행되는 함수
+        volumeSlider.addEventListener('input', function () {
+            audioPlayer.volume = volumeSlider.value;
+        });
+
+        // Mock 데이터 (나중에 실제 API로 대체 가능)
+        const songs = [
+            { id: 1, title: "HAPPY", artist: "DAY6", url: "song1.mp3" },
+            { id: 2, title: "Welcome to the Show", artist: "DAY6", url: "song2.mp3" },
+            { id: 3, title: "한 페이지가 될 수 있게", artist: "DAY6", url: "song3.mp3" },
+            { id: 4, title: "Supernova", artist: "aespa", url: "song4.mp3" },
+            { id: 5, title: "소나기", artist: "이클립스", url: "song5.mp3" }
+        ];
+
+        // 재생 목록 생성
+        function loadPlaylist() {
+            playlist.innerHTML = ''; // 초기화
+            songs.forEach((song, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `<input type="checkbox"> ${song.title} - ${song.artist} <button data-index="${index}" class="play-btn">재생</button>`;
+                playlist.appendChild(li);
+            });
+        }
+
+        // 노래 재생
+        function playSong(index) {
+            const song = songs[index];
+            audioSource.src = song.url;
+            audioPlayer.load();
+            audioPlayer.play();
+            currentSongDisplay.textContent = `${song.title} - ${song.artist}`;
+        }
+
+        // 재생 버튼 클릭 이벤트
+        playlist.addEventListener('click', function (e) {
+            if (e.target.classList.contains('play-btn')) {
+                const index = e.target.getAttribute('data-index');
+                playSong(index);
+            }
+        });
+
+        // 탭 전환 기능
+        playlistTab.addEventListener('click', function () {
+            playlistTab.classList.add('active');
+            myMusicTab.classList.remove('active');
+
+            playlistContent.classList.add('active');
+            myMusicContent.classList.remove('active');
+        });
+
+        myMusicTab.addEventListener('click', function () {
+            myMusicTab.classList.add('active');
+            playlistTab.classList.remove('active');
+
+            myMusicContent.classList.add('active');
+            playlistContent.classList.remove('active');
+        });
+        // 팝업 창 열기
+        function openPlayerPopup() {
+            const popupWidth = 500; // 팝업 너비
+            const popupHeight = 500; // 팝업 높이
+            const popupOptions = `width=${popupWidth},height=${popupHeight},resizable=yes,scrollbars=no`;
+            window.open('your_player_page.html', 'Music Player', popupOptions);
+        }
+
+
+        // 페이지 로드 시 초기화
+        loadPlaylist();
+    </script>
+    <button onclick="openPlayerPopup()">팝업 플레이어 열기</button>
+</body>
+
+</html>
